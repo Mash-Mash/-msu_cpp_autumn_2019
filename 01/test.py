@@ -17,4 +17,3 @@ check("2/2/2", '0')
 check("1-2+3-4", '-2')
 check("2 + 1", '3')
 check("1/0","Error: division by zero")
-
