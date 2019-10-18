@@ -17,7 +17,7 @@ int main(int args, char* argv[])
 		//std::getline(std::cin, expression);
 
 		int num = calculator(expression);
-		std::cout << num << std::endl;
+		std::cout << num;
 		return 0;
 	}
 	catch (std::runtime_error& ex)
