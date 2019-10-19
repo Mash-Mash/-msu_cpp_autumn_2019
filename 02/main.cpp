@@ -8,12 +8,18 @@ int main(int argc, char* argv[])
 	std::stringstream ss;
  	for(int i = 1; i < argc; i++ )
 	{
-		ss << argv[i];
+		ss << argv[i] << " ";
 	}
 
 	size_t pos;
 	std::string s;
 	ss >> s;
+	if (!s.length())
+	{
+		std::cout << "Parsing error. Exiting...";
+                return 1;
+	}
+
 	int maxSize = std::stoi(s, &pos);
 	if (pos != s.length())
 	{
