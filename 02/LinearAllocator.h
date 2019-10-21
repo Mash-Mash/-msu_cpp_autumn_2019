@@ -1,12 +1,12 @@
 #pragma once
-#include<iostream>
-#include<vector>
+#include <iostream>
+#include <memory>
 
 class LinearAllocator
 {
-	int d_capacity;
-	int d_size;
-	std::vector<char> d_memory;
+	size_t d_capacity;
+	size_t d_size;
+	std::unique_ptr<char[]> d_memory;
 
 public:
 	LinearAllocator(size_t maxSize);
