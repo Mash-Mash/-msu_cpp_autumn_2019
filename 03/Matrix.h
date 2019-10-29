@@ -11,21 +11,10 @@ public:
 	public:
 		friend class Matrix;
 		int& operator[](int col);
-
-	private:
-		Row(int* row, size_t size);
-
-		int* d_row;
-		size_t d_size;
-	};
-	class ConstRow
-	{
-	public:
-		friend class Matrix;
 		const int& operator[](int col) const;
 
 	private:
-		ConstRow(const int* row, size_t size);
+		Row(const int* row, size_t size);
 
 		const int* d_row;
 		size_t d_size;
@@ -33,8 +22,8 @@ public:
 	Matrix();
 	Matrix(size_t n, size_t m);
 
-	Row operator[](int i);
-	const ConstRow operator[](size_t i) const;
+	Row operator[](size_t i);
+	const Row operator[](size_t i) const;
 	Matrix& operator*=(int parameter);
 
 	bool operator==(const Matrix& mas) const;
@@ -44,8 +33,8 @@ public:
 	size_t getColumns() const { return columns; }
 
 private:
-	int lines;
-	int columns;
+	size_t lines;
+	size_t columns;
 	std::vector<int> d_mas;
 };
 std::ostream& operator<<(std::ostream& os, const Matrix& mas);

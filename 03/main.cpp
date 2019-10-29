@@ -63,9 +63,10 @@ void CheckTest()
 
 	const size_t rows = 5;
 	const size_t cols = 3;
-	Matrix m(rows, cols);
-	m[3][2] = 5;
+	const Matrix m(rows, cols);
 	double x = m[4][1];
+	std::cout << "x == " << x << std::endl;
+	std::cout << m << std::endl;
 
 	check_equal(m1 == m1);
 	check_equal(m1 != m);

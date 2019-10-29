@@ -1,10 +1,6 @@
 #include "Matrix.h"
 
-Matrix::Row::Row(int* row, size_t size) : d_row(row), d_size(size)
-{
-}
-
-Matrix::ConstRow::ConstRow(const int* row, size_t size) : d_row(row), d_size(size)
+Matrix::Row::Row(const int* row, size_t size) : d_row(row), d_size(size)
 {
 }
 
@@ -12,10 +8,10 @@ int& Matrix::Row::operator[](int col)
 {
 	if (col > d_size)
 		throw(std::out_of_range("Out of range"));
-	return d_row[col];
+	return const_cast<int*>(d_row)[col];
 }
 
-const int& Matrix::ConstRow::operator[](int col) const
+const int& Matrix::Row::operator[](int col) const
 {
 	if (col > d_size)
 		throw(std::out_of_range("Out of range"));
@@ -30,18 +26,18 @@ Matrix::Matrix(size_t n, size_t m) : lines(n), columns(m), d_mas(n * m, 0)
 {
 }
 
-Matrix::Row Matrix::operator[](int i)
+Matrix::Row Matrix::operator[](size_t i)
 {
 	if (i > lines || i < 0)
 		throw(std::out_of_range("Out of range"));
 	return Row(d_mas.data() + i * columns, columns);
 }
 
-const Matrix::ConstRow Matrix::operator[](size_t i) const
+const Matrix::Row Matrix::operator[](size_t i) const
 {
 	if (i > lines || i < 0)
 		throw(std::out_of_range("Out of range"));
-	return ConstRow(d_mas.data() + i * columns, columns);
+	return Row(d_mas.data() + i * columns, columns);
 }
 
 Matrix& Matrix::operator*=(int parameter)
