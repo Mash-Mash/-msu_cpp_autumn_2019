@@ -86,7 +86,7 @@ void CheckTest()
 
 int main(int argc, char* argv[])
 {
-	//if (argc == 2 && std::string(argv[1]) == "-test")
+	if (argc == 2 && std::string(argv[1]) == "-test")
 		CheckTest();
 
 	return 0;
