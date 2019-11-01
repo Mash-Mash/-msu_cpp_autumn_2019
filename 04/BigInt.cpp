@@ -1,24 +1,24 @@
-#include "BigInt.h"
-#define CHUNK 16
+#include <cstring>
 
-BigInt::BigInt(): d_size(0), d_capacity(0), d_sign('+'), d_buf(nullptr)
+#include "BigInt.h"
+
+const int extra_memory_size = 16;
+
+BigInt::BigInt(): d_size(0), d_capacity(0), d_sign(0), d_buf(nullptr)
 {
 }
 
 BigInt::BigInt(const BigInt& elem)
 {
 	d_size = elem.d_size;
-	d_capacity = d_size + CHUNK;
+	d_capacity = elem.d_capacity;
 	d_sign = elem.d_sign;
-	d_buf = new char[d_size + CHUNK];
+	d_buf = new char[d_capacity];
 
-	for (int i = 0; i < elem.d_size; ++i)
-	{
-		d_buf[i] = elem.d_buf[i];
-	}
+	std::memcpy(d_buf, elem.d_buf, d_capacity);
 }
 
-BigInt::BigInt(const int num): BigInt(std::to_string(num))
+BigInt::BigInt(int num): BigInt(std::to_string(num))
 {
 }
 
@@ -26,17 +26,17 @@ BigInt::BigInt(std::string str)
 {
 	if (str[0] == '-')
 	{
-		d_sign = '-';
+		d_sign = 1;
 		str.erase(str.begin());
 	}
 	else
 	{
-		d_sign = '+';
+		d_sign = 0;
 	}
 
 	d_size = str.length();
-	d_capacity = d_size + CHUNK;
-	d_buf = new char[d_size + CHUNK];
+	d_capacity = d_size + extra_memory_size;
+	d_buf = new char[d_capacity];
 
 	for (int i = 0; i < d_size; ++i)
 	{
@@ -49,11 +49,11 @@ BigInt::~BigInt()
 	delete[] d_buf;
 }
 
-const BigInt operator+(const BigInt& elem1, const BigInt& elem2)
+BigInt operator+(const BigInt& elem1, const BigInt& elem2)
 {
 	if (elem1.d_sign != elem2.d_sign)
 	{
-		if (elem1.d_sign == '-')
+		if (elem1.d_sign == 1)
 		{
 			return (elem2 - (-elem1));
 		}
@@ -97,14 +97,12 @@ const BigInt operator+(const BigInt& elem1, const BigInt& elem2)
 			{
 				if (res.d_size == res.d_capacity)
 				{
-					char* new_buf = new char[res.d_size + CHUNK];
-					for (int i = 0; i < res.d_size; ++i)
-					{
-						new_buf[i] = res.d_buf[i];
-					}
+					char* new_buf = new char[res.d_size + extra_memory_size];
+					std::memcpy(new_buf, res.d_buf, res.d_size);
+
 					delete[] res.d_buf;
 					res.d_buf = new_buf;
-					res.d_capacity = res.d_size + CHUNK;
+					res.d_capacity = res.d_size + extra_memory_size;
 				}
 				res.d_size += 1;
 				res.d_buf[i] = '0';
@@ -115,13 +113,10 @@ const BigInt operator+(const BigInt& elem1, const BigInt& elem2)
 		i++;
 	}
 
-	if (res == BigInt("-0"))
-		res.d_sign = '+';
-
 	return res;
 }
 
-const BigInt operator-(const BigInt& elem1, const BigInt& elem2)
+BigInt operator-(const BigInt& elem1, const BigInt& elem2)
 {
 	if (elem1 == elem2)
 		return BigInt(0);
@@ -137,7 +132,7 @@ const BigInt operator-(const BigInt& elem1, const BigInt& elem2)
 
 	if (elem1 < elem2)
 	{
-		res.d_sign = '-';
+		res.d_sign = 1;
 	}
 
 	int digit = 0;
@@ -189,7 +184,7 @@ const BigInt BigInt::operator-() const
 		return BigInt(0);
 
 	BigInt elem = *this;
-	elem.d_sign = (this->d_sign == '+') ? '-' : '+';
+	elem.d_sign = (this->d_sign == 0) ? 1 : 0;
 
 	return elem;
 }
@@ -265,7 +260,7 @@ bool BigInt::operator>=(const BigInt& elem) const
 
 std::ostream& operator<<(std::ostream& os, const BigInt& elem)
 {
-	if (elem.d_sign == '-')
+	if (elem.d_sign == 1)
 		os << '-';
 	for (int i = elem.d_size - 1; i >= 0; --i)
 	{

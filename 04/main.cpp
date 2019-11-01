@@ -65,6 +65,11 @@ void CheckTest()
 	Check_equal(BigInt(0), BigInt(-1));
 	std::cout << std::endl;
 
+	CheckTest_plus(BigInt(1), BigInt(0));
+	CheckTest_minus(BigInt(1), BigInt(0));
+	Check_equal(BigInt(1), BigInt(0));
+	std::cout << std::endl;
+
 	CheckTest_plus(BigInt(0), BigInt(0));
 	CheckTest_minus(BigInt(0), BigInt(0));
 	Check_equal(BigInt(0), BigInt(0));
@@ -72,16 +77,17 @@ void CheckTest()
 
 	BigInt x = 1;
 	BigInt y = 99;
-	BigInt z =  x + y - y + x;
+	BigInt z =  x + (y - y) + x;
 
-	std::cout << x << " + " << y << " - " << y << " + " << x << " = " << z << std::endl;
+	std::cout << x << " + " << y << " - " << y << " - " << x <<  " = " << z << std::endl;
 
 }
 
 
 int main(int argc, char* argv[])
 {
-	if (argc == 2 && std::string(argv[1]) == "-test")
+	//if (argc == 2 && std::string(argv[1]) == "-test")
 		CheckTest();
+
 	return 0;
 }
