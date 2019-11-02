@@ -77,9 +77,9 @@ void CheckTest()
 
 	BigInt x = 1;
 	BigInt y = 99;
-	BigInt z =  x + (y - y) + x;
+	BigInt z =  x + y - y + x;
 
-	std::cout << x << " + " << y << " - " << y << " - " << x <<  " = " << z << std::endl;
+	std::cout << x << " + " << y << " - " << y << " + " << x <<  " = " << z << std::endl;
 
 }
 

@@ -8,12 +8,12 @@ public:
 	BigInt();
 	BigInt(const BigInt& elem);
 	BigInt(int num);
-	BigInt(std::string str);
+	BigInt(const std::string& str);
 	~BigInt();
 
 	friend BigInt operator+(const BigInt& elem1, const BigInt& elem2);
 	friend BigInt operator-(const BigInt& elem1, const BigInt& elem2);
-	const BigInt operator-() const;
+	BigInt operator-() const;
 
 	bool operator==(const BigInt& elem) const;
 	bool operator!=(const BigInt& elem) const;

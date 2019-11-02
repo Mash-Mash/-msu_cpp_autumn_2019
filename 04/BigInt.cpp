@@ -22,19 +22,18 @@ BigInt::BigInt(int num): BigInt(std::to_string(num))
 {
 }
 
-BigInt::BigInt(std::string str)
+BigInt::BigInt(const std::string& str)
 {
 	if (str[0] == '-')
 	{
 		d_sign = 1;
-		str.erase(str.begin());
 	}
 	else
 	{
 		d_sign = 0;
 	}
 
-	d_size = str.length();
+	d_size = d_sign ? str.length() - 1 : str.length();
 	d_capacity = d_size + extra_memory_size;
 	d_buf = new char[d_capacity];
 
@@ -178,7 +177,7 @@ BigInt operator-(const BigInt& elem1, const BigInt& elem2)
 	return res;
 }
 
-const BigInt BigInt::operator-() const
+BigInt BigInt::operator-() const
 {
 	if (*this == BigInt("0"))
 		return BigInt(0);
