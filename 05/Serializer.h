@@ -10,19 +10,6 @@ enum class Error
 	CorruptedArchive
 };
 
-struct Data
-{
-	uint64_t a;
-	bool b;
-	uint64_t c;
-
-	template <class Serializer>
-	Error serialize(Serializer& serializer)
-	{
-		return serializer(a, b, c);
-	}
-};
-
 
 class Serializer
 {
@@ -52,7 +39,7 @@ private:
 	template <class T>
 	Error process(T& object)
 	{
-			return Error::CorruptedArchive;
+		return Error::CorruptedArchive;
 	}
 
 	template <class T, class... ArgsT>

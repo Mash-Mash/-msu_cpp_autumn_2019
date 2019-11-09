@@ -37,7 +37,8 @@ private:
 	template <class T, class... ArgsT>
 	Error process(T& object, ArgsT&... args)
 	{
-		process(object);
+		if (process(object) == Error::CorruptedArchive)
+			return Error::CorruptedArchive;
 
 		return process(args...);
 	}
