@@ -13,7 +13,6 @@ enum class Error
 
 class Serializer
 {
-	static constexpr char Separator = ' ';
 public:
 	explicit Serializer(std::ostream& out)
 		: d_out(out)
@@ -27,7 +26,7 @@ public:
 	}
 
 	template <class... ArgsT>
-	Error operator()(ArgsT... args)
+	Error operator()(ArgsT&... args)
 	{
 		return process(args...);
 	}
@@ -43,9 +42,13 @@ private:
 	}
 
 	template <class T, class... ArgsT>
-	Error process(T& object, ArgsT... args)
+	Error process(T& object, ArgsT&... args)
 	{
-		process(object);
+		if (process(object) == Error::CorruptedArchive)
+		{
+			return Error::CorruptedArchive;
+		}		
+		d_out << ' ';
 
 		return process(args...);
 	}
@@ -56,11 +59,11 @@ Error Serializer::process(bool& object)
 {
 	if (object)
 	{
-		d_out << "true" << Separator;
+		d_out << "true";
 	}
 	else
 	{
-		d_out << "false" << Separator;
+		d_out << "false";
 	}
 
 		return Error::NoError;
@@ -69,7 +72,7 @@ Error Serializer::process(bool& object)
 template <>
 Error Serializer::process(uint64_t& object)
 {
-	d_out << std::to_string(object) << Separator;
+	d_out << std::to_string(object);
 
 	return Error::NoError;
 }

@@ -31,6 +31,19 @@ struct Data2
         }
 };
 
+struct Data3
+{
+        char a;
+        bool b;
+        uint64_t c;
+
+        template <class Serializer>
+        Error serialize(Serializer& serializer)
+        {
+                return serializer(a, b, c);
+        }
+};
+
 void CheckTest()
 {
 	Data x{ 1, false, 2 };
@@ -63,6 +76,19 @@ void CheckTest()
         assert(a.a != b.a);
         assert(a.b != b.b);
         assert(a.c != b.c);
+
+        Data c{30, true, 100};
+        serializer.save(a);
+        Data3 d{'e', false, 90};
+
+        const Error err2 = deserializer.load(b);
+
+        assert(err2 == Error::CorruptedArchive);
+
+        assert(c.a != d.a);
+        assert(c.b != d.b);
+        assert(c.c != d.c);
+
 
 }
 

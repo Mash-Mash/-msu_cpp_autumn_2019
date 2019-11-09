@@ -67,6 +67,13 @@ Error Deserializer::process(uint64_t& object)
 	std::string text;
 	d_in >> text;
 
+	for (int i = 0; i < text.length(); ++i)
+	{
+		if (text[i] < '0' || text[i] > '9')
+		{
+			return Error::CorruptedArchive;
+		}
+	}	
 	object = std::stoi(text);
 
 	return Error::NoError;
