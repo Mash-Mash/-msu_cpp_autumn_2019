@@ -118,9 +118,11 @@ void CheckTest3()
 int main(int argc, char* argv[])
 {
 	if (argc == 2 && std::string(argv[1]) == "-test")
+	{
 		CheckTest1();
 		CheckTest2();
 		CheckTest3();
+	}
 
 	return 0;
 }
