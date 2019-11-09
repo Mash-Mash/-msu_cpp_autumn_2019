@@ -86,16 +86,3 @@ Error Serializer::process(uint64_t& object)
 
 	return Error::NoError;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
