@@ -7,7 +7,6 @@
 
 class Deserializer
 {
-	static constexpr char Separator = ' ';
 public:
 	explicit Deserializer(std::istream& in)
 		: d_in(in)
