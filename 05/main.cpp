@@ -18,7 +18,6 @@ struct Data
 	}
 };
 
-
 struct Data2
 {
         bool a;
