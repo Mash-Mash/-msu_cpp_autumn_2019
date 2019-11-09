@@ -16,7 +16,15 @@ public:
 	template <class T>
 	Error load(T& object)
 	{
-		return object.serialize(*this);
+		std::string text = "";
+
+		Error type = object.serialize(*this);
+		d_in >> text;
+		if (text != "")
+		{
+			type = Error::CorruptedArchive;
+		}
+		return type;
 	}
 
 	template <class... ArgsT>
@@ -31,7 +39,7 @@ private:
 	template <class T>
 	Error process(T& object)
 	{
-			return Error::CorruptedArchive;
+		return Error::CorruptedArchive;
 	}
 	
 	template <class T, class... ArgsT>
@@ -43,7 +51,6 @@ private:
 		return process(args...);
 	}
 };
-
 
 template <>
 Error Deserializer::process(bool& object)
@@ -66,6 +73,11 @@ Error Deserializer::process(uint64_t& object)
 {
 	std::string text;
 	d_in >> text;
+
+	if (text == "")
+	{
+		return Error::CorruptedArchive;
+	}
 
 	for (int i = 0; i < text.length(); ++i)
 	{

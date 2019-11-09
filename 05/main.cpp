@@ -44,18 +44,29 @@ struct Data3
         }
 };
 
-void CheckTest()
+struct Data4
 {
-	Data x{ 1, false, 2 };
+	uint64_t a;
+	bool b;
 
+	template <class Serializer>
+	Error serialize(Serializer& serializer)
+	{
+		return serializer(a, b);
+	}
+};
+
+void CheckTest1()
+{
 	std::stringstream stream;
 
 	Serializer serializer(stream);
-	serializer.save(x);
+	Deserializer deserializer(stream);
 
+	Data x{ 1, false, 2 };
 	Data y{ 0, false, 1 };
 
-	Deserializer deserializer(stream);
+	serializer.save(x);
 	const Error err = deserializer.load(y);
 
 	assert(err == Error::NoError);
@@ -63,39 +74,53 @@ void CheckTest()
 	assert(x.a == y.a);
 	assert(x.b == y.b);
 	assert(x.c == y.c);
+}
 
+void CheckTest2()
+{
+	std::stringstream stream;
+
+	Serializer serializer(stream);
+	Deserializer deserializer(stream);
 
 	Data a{30, true, 100};
-	serializer.save(a);
 	Data2 b{true, false, 90};
+	
+	serializer.save(a);
+	const Error err = deserializer.load(b);
+	
+	assert(err == Error::CorruptedArchive);
+	
+	assert(a.a != b.a);
+	assert(a.b != b.b);
+	assert(a.c != b.c);
+}
 
-        const Error err1 = deserializer.load(b);
+void CheckTest3()
+{
+	std::stringstream stream;
 
-        assert(err1 == Error::CorruptedArchive);
+	Serializer serializer(stream);
+	Deserializer deserializer(stream);
 
-        assert(a.a != b.a);
-        assert(a.b != b.b);
-        assert(a.c != b.c);
+	Data c{ 30, true, 100 };
+	Data4 d{ 40, false };
 
-        Data c{30, true, 100};
-        serializer.save(a);
-        Data3 d{'e', false, 90};
+	serializer.save(c);
+	const Error err = deserializer.load(d);
 
-        const Error err2 = deserializer.load(b);
+	assert(err == Error::CorruptedArchive);
 
-        assert(err2 == Error::CorruptedArchive);
-
-        assert(c.a != d.a);
-        assert(c.b != d.b);
-        assert(c.c != d.c);
-
-
+	assert(c.a == d.a);
+	assert(c.b == d.b);
 }
 
 int main(int argc, char* argv[])
 {
 	if (argc == 2 && std::string(argv[1]) == "-test")
-		CheckTest();
+		CheckTest1();
+		CheckTest2();
+		CheckTest3();
 
 	return 0;
 }

@@ -31,7 +31,6 @@ public:
 		return process(args...);
 	}
 		
-
 private:
 	std::ostream& d_out;
 
