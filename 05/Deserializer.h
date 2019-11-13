@@ -28,27 +28,27 @@ public:
 	}
 
 	template <class... ArgsT>
-	Error operator()(ArgsT&... args)
+	Error operator()(ArgsT&&... args)
 	{
-		return process(args...);
+		return process(std::forward<ArgsT>(args)...);
 	}
 
 private:
 	std::istream& d_in;
 
 	template <class T>
-	Error process(T& object)
+	Error process(T&& object)
 	{
 		return Error::CorruptedArchive;
 	}
 	
 	template <class T, class... ArgsT>
-	Error process(T& object, ArgsT&... args)
+	Error process(T&& object, ArgsT&&... args)
 	{
 		if (process(object) == Error::CorruptedArchive)
 			return Error::CorruptedArchive;
 
-		return process(args...);
+		return process(std::forward<ArgsT>(args)...);
 	}
 };
 

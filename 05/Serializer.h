@@ -2,7 +2,6 @@
 #include <string>
 #include <sstream>
 #include <iostream>
-#include <type_traits>
 
 enum class Error
 {
@@ -26,22 +25,22 @@ public:
 	}
 
 	template <class... ArgsT>
-	Error operator()(ArgsT&... args)
+	Error operator()(ArgsT&&... args)
 	{
-		return process(args...);
+		return process(std::forward<ArgsT>(args)...);
 	}
 		
 private:
 	std::ostream& d_out;
 
 	template <class T>
-	Error process(T& object)
+	Error process(T&& object)
 	{
 		return Error::CorruptedArchive;
 	}
 
 	template <class T, class... ArgsT>
-	Error process(T& object, ArgsT&... args)
+	Error process(T&& object, ArgsT&&... args)
 	{
 		if (process(object) == Error::CorruptedArchive)
 		{
@@ -49,7 +48,7 @@ private:
 		}		
 		d_out << ' ';
 
-		return process(args...);
+		return process(std::forward<ArgsT>(args)...);
 	}
 };
 
