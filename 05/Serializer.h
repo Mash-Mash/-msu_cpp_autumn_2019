@@ -42,7 +42,7 @@ private:
 	template <class T, class... ArgsT>
 	Error process(T&& object, ArgsT&&... args)
 	{
-		if (process(object) == Error::CorruptedArchive)
+		if (process(std::forward<T>(object)) == Error::CorruptedArchive)
 		{
 			return Error::CorruptedArchive;
 		}		
