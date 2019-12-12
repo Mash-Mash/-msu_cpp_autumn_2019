@@ -21,7 +21,7 @@ public:
 };
 
 template <class T>
-class Iterator
+class Iterator : public std::iterator<std::random_access_iterator_tag, T>
 {
 public:
 	using value_type = T;
@@ -69,34 +69,34 @@ private:
 };
 
 template <class T>
-class Reverse_iterator
+class reverse_iterator : public std::iterator<std::random_access_iterator_tag, T>
 {
 public:
 	using value_type = T;
 	using pointer = T *;
 	using reference = T &;
 
-	explicit Reverse_iterator(pointer begin) : d_ptr(begin)
+	explicit reverse_iterator(pointer begin) : d_ptr(begin)
 	{
 	}
 
-	bool operator==(const Reverse_iterator& other) const
+	bool operator==(const reverse_iterator& other) const
 	{
 		return d_ptr == other.d_ptr;
 	}
 
-	bool operator!=(const Reverse_iterator& other) const
+	bool operator!=(const reverse_iterator& other) const
 	{
 		return !(*this == other);
 	}
 
-	Reverse_iterator& operator++()
+	reverse_iterator& operator++()
 	{
 		--d_ptr;
 		return *this;
 	}
 
-	Reverse_iterator& operator--()
+	reverse_iterator& operator--()
 	{
 		++d_ptr;
 		return *this;
@@ -127,7 +127,7 @@ public:
 	using const_reference = const T &;
 	using allocator_type = Alloc;
 	using iterator = Iterator<T>;
-	using reverse_iterator = Reverse_iterator<T>;
+	using reverse_iterator = reverse_iterator<T>;
 
 	explicit Vector(size_type count = 100)
 	{
@@ -176,7 +176,7 @@ public:
 			reserve((d_vec - d_begin) * 2);
 		}
 
-		*d_end = std::move(value);
+		new(d_end) value_type(std::move(value));
 		++d_end;
 	}
 
@@ -186,7 +186,7 @@ public:
 		{
 			reserve((d_vec - d_begin) * 2);
 		}
-		*d_end = value;
+		new(d_end) value_type(value);
 		++d_end;
 	}
 
@@ -217,7 +217,7 @@ public:
 
 			for (int i = 0; i != d_end - d_begin; ++i)
 			{
-				new_buf[i] = d_begin[i];
+				new (new_buf + i) value_type(d_begin[i]);
 				(d_begin + i)->~value_type();
 			}
 
