@@ -1,4 +1,5 @@
 #pragma once
+
 #include <vector>
 #include <thread>
 #include <mutex>
@@ -12,20 +13,25 @@ class ThreadPool {
 public:
 	using Function = std::function<void()>;
 
-	void loop_function(ThreadPool& pool)
+	void loop_function()
 	{
 		while (true)
 		{
+			if (d_stop)
+			{
+				return;
+			}
+
 			Function task;
 			{
-				std::unique_lock<std::mutex> lock(pool.d_mutex);
-				pool.d_condition.wait(lock, [&pool] { return pool.d_stop || !pool.d_tasks.empty(); });
-				if (pool.d_stop && pool.d_tasks.empty())
+				std::unique_lock<std::mutex> lock(d_mutex);
+				d_condition.wait(lock, [this] { return d_stop || !d_tasks.empty(); });
+				if (d_stop && d_tasks.empty())
 				{
 					return;
 				}
-				task = pool.d_tasks.front();
-				pool.d_tasks.pop();
+				task = d_tasks.front();
+				d_tasks.pop();
 			}
 			task();
 		}
@@ -35,7 +41,7 @@ public:
 	{
 		for (size_t i = 0; i < poolSize; ++i)
 		{
-			d_pool.emplace_back([this](){ return loop_function(*this); });
+			d_pool.emplace_back(std::bind(&ThreadPool::loop_function, this));
 		}
 	}
 
