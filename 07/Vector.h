@@ -25,11 +25,6 @@ public:
 		((pointer)p)->~value_type();
 	}
 
-	void construct(pointer p, const_reference val)
-	{
-		new((void*)p) value_type(val);
-	}
-
 	template< class U, class... Args >
 	void construct(U* p, Args&& ... args)
 	{
