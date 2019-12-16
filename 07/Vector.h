@@ -7,6 +7,7 @@ public:
 	using value_type = T;
 	using pointer = T *;
 	using size_type = size_t;
+	using const_reference = const T &;
 
 	pointer allocate(size_type count)
 	{
@@ -17,6 +18,16 @@ public:
 	void deallocate(pointer ptr)
 	{
 		::operator delete(ptr);
+	}
+
+	void destroy(pointer p)
+	{
+		((pointer)p)->~value_type();
+	}
+
+	void construct(pointer p, const_reference val)
+	{
+		new((void*)p) value_type(val);
 	}
 };
 
@@ -127,7 +138,7 @@ public:
 	using const_reference = const T &;
 	using allocator_type = Alloc;
 	using iterator = Iterator<T>;
-	using reverse_iterator = reverse_iterator<T>;
+	using Reverse_iterator = reverse_iterator<T>;
 
 	explicit Vector(size_type count = 100)
 	{
@@ -140,7 +151,7 @@ public:
 	{
 		for (pointer it = d_begin; it != d_end; ++it)
 		{
-			it->~value_type();
+			d_alloc.destroy(it);
 		}
 		d_alloc.deallocate(d_begin);
 	}
@@ -154,19 +165,18 @@ public:
 	{
 		return iterator(d_begin);
 	}
-	reverse_iterator rbegin() noexcept
+	Reverse_iterator rbegin() noexcept
 	{
-		return reverse_iterator(d_end - 1);
+		return Reverse_iterator(d_end - 1);
 	}
 
 	iterator end() noexcept
 	{
 		return iterator(d_end);
 	}
-	reverse_iterator rend() noexcept
+	Reverse_iterator rend() noexcept
 	{
-		return reverse_iterator(d_begin - 1);
-		//return iterator(d_begin - 1);
+		return Reverse_iterator(d_begin - 1);
 	}
 
 	void push_back(value_type&& value)
@@ -176,7 +186,7 @@ public:
 			reserve((d_vec - d_begin) * 2);
 		}
 
-		new(d_end) value_type(std::move(value));
+		d_alloc.construct(d_end, std::move(value));
 		++d_end;
 	}
 
@@ -186,7 +196,7 @@ public:
 		{
 			reserve((d_vec - d_begin) * 2);
 		}
-		new(d_end) value_type(value);
+		d_alloc.construct(d_end, value);
 		++d_end;
 	}
 
@@ -195,7 +205,7 @@ public:
 		if (d_begin != d_end)
 		{
 			--d_end;
-			d_end->~value_type();
+			d_alloc.destroy(d_end);
 		}
 	}
 
@@ -217,8 +227,8 @@ public:
 
 			for (int i = 0; i != d_end - d_begin; ++i)
 			{
-				new (new_buf + i) value_type(d_begin[i]);
-				(d_begin + i)->~value_type();
+				d_alloc.construct(new_buf + i, d_begin[i]);
+				d_alloc.destroy(d_begin + i);
 			}
 
 			d_end = new_buf + (d_end - d_begin);
@@ -252,7 +262,7 @@ public:
 		{
 			while (d_end != d_begin + newSize)
 			{
-				new (d_end) value_type;
+				d_alloc.construct(d_end, value_type());
 				++d_end;
 			}
 		}
@@ -262,7 +272,7 @@ public:
 	{
 		while (d_end != d_begin)
 		{
-			d_end->~value_type();
+			d_alloc.destroy(d_end);
 			--d_end;
 		}
 	}
