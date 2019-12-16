@@ -29,6 +29,12 @@ public:
 	{
 		new((void*)p) value_type(val);
 	}
+
+	template< class U, class... Args >
+	void construct(U* p, Args&& ... args)
+	{
+		::new((void*)p) U(std::forward<Args>(args)...);
+	}
 };
 
 template <class T>
